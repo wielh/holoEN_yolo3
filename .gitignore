@@ -1,0 +1,7 @@
+conda_env/
+.vscode/
+done_image/
+object_detection_image/
+object_detection_models/logs/
+train.txt
+

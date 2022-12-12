@@ -26,4 +26,6 @@ How to use the program:
    
     python keras-yolo3-master\yolo_video.py --image --anchors_path {path} 
         --classes_path {path} --model_path {path}
+        
+   (9). There's a sample weight called of tiny version model new_weight_8.h5.
 

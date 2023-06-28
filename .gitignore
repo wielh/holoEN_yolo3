@@ -4,4 +4,5 @@ done_image/
 object_detection_images/
 object_detection_models/logs/
 train.txt
-
+models/
+.gitignore

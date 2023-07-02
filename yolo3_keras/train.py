@@ -13,10 +13,9 @@ from keras.layers import Input, Lambda
 from keras.models import Model,load_model
 
 def start_training(is_retrain:bool, annotation_path:str,
-    model_dir_path: str, load_model_name:str, save_model_name:str,
-    learing_rate:float, batch_size:int, epochs:int):
+    model_dir_path: str, load_model_name:str, save_model_name:str, classes_path:str,
+    learning_rate:float, batch_size:int, epochs:int):
 
-    classes_path = train_model_config.classes_path
     anchors_path = train_model_config.anchors_path
     class_names = get_classes(classes_path)
     num_classes = len(class_names)
@@ -59,7 +58,7 @@ def start_training(is_retrain:bool, annotation_path:str,
     # (160, 219)(220,max)
     yololoss = lambda y_true, y_pred: y_pred
     print("total layers:",len(model.layers))
-    opt = train_model_config.get_optimizer(learing_rate)
+    opt = train_model_config.get_optimizer(learning_rate)
     print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
 
     for i in range(len(model.layers)):
@@ -139,11 +138,13 @@ def create_model(input_shape, anchors, num_classes, load_pretrained=True, freeze
     if load_pretrained:
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
         print('Load weights {}.'.format(weights_path))
+        '''
         if freeze_body in [1, 2]:
             # Freeze darknet53 body or freeze all but 3 output layers.
             num = (185, len(model_body.layers)-3)[freeze_body-1]
             for i in range(num): model_body.layers[i].trainable = False
             print('Freeze the first {} layers of total {} layers.'.format(num, len(model_body.layers)))
+        '''
 
     model_loss = Lambda(yolo_loss, output_shape=(1,), name='yolo_loss',
         arguments={'anchors': anchors, 'num_classes': num_classes, 'ignore_thresh': 0.5})(
@@ -170,11 +171,13 @@ def create_tiny_model(input_shape, anchors, num_classes, load_pretrained=True, f
     if load_pretrained:
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
         print('Load weights {}.'.format(weights_path))
+        '''
         if freeze_body in [1, 2]:
             # Freeze the darknet body or freeze all but 2 output layers.
             num = (20, len(model_body.layers)-2)[freeze_body-1]
             for i in range(num): model_body.layers[i].trainable = False
             print('Freeze the first {} layers of total {} layers.'.format(num, len(model_body.layers)))
+        '''
 
     model_loss = Lambda(yolo_loss, output_shape=(1,), name='yolo_loss',
         arguments={'anchors': anchors, 'num_classes': num_classes, 'ignore_thresh': 0.7})(

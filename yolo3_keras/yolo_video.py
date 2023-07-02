@@ -1,6 +1,6 @@
-import sys,time
-import argparse
-from yolo import YOLO, detect_video
+import time, argparse, os
+from yolo3_keras.yolo import YOLO, detect_video
+from pathlib import Path
 from PIL import Image
 
 def detect_img(yolo):
@@ -8,7 +8,6 @@ def detect_img(yolo):
         img = input('Input image filename:')
         if img.startswith("\"") and img.endswith("\""):
             img = img[1:-1]
-
         try:
             image = Image.open(img)
         except:
@@ -20,8 +19,8 @@ def detect_img(yolo):
         time.sleep(1)
     yolo.close_session()
 
-FLAGS = None
-if __name__ == '__main__':
+def start_detecting_and_show():
+    FLAGS = None
     # class YOLO defines the default value, so suppress any default here
     parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
     '''
@@ -77,3 +76,28 @@ if __name__ == '__main__':
         detect_video(YOLO(**vars(FLAGS)), FLAGS.input, FLAGS.output)
     else:
         print("Must specify at least video_input_path.  See usage with --help.")
+
+# ===================================================
+def start_detecting(weight_path:str, classes_path: str, input_images_dir: str, output_images_dir :str):
+
+    yolo = YOLO(model_path=weight_path, classes_path=classes_path)
+    for path in Path(input_images_dir).rglob('*.jpg'):
+        try:
+            image_src = os.path.join(path.parent,path.name)
+            relative_path = os.path.relpath(image_src, input_images_dir)
+            image_dest = os.path.join(output_images_dir,relative_path)
+            image =  Image.open(image_src)
+            image_out = yolo.detect_image(image)
+
+            if not os.path.exists(os.path.dirname(image_dest)):
+                os.makedirs(os.path.dirname(image_dest))
+            image_out.save(image_dest)
+        except Exception as e:
+            print("An error happens on image:"+image_src)
+            print(str(e))
+            print("==================================")
+
+
+
+
+

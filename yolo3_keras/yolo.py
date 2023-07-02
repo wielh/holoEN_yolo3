@@ -18,15 +18,16 @@ from yolo3_keras.yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3_keras.yolo3.utils import letterbox_image
 import os
 # from keras.utils import multi_gpu_model
-from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
+from keras.utils.multi_gpu_utils import multi_gpu_model
 
 tf.compat.v1.disable_eager_execution()
 
 class YOLO(object):
+
     _defaults = {
-        "model_path": 'model_data/yolo.h5',
-        "anchors_path": 'model_data/yolo_anchors.txt',
-        "classes_path": 'model_data/coco_classes.txt',
+        "model_path": 'models/weight_success.h5',
+        "anchors_path": 'yolo3_keras/model_data/tiny_yolo_anchors.txt',
+        "classes_path": 'yolo3_keras/model_data/voc_classes.txt',
         "score" : 0.3,
         "iou" : 0.45,
         "model_image_size" : (416, 416),
@@ -71,6 +72,7 @@ class YOLO(object):
         num_anchors = len(self.anchors)
         num_classes = len(self.class_names)
         is_tiny_version = num_anchors==6 # default setting
+
         try:
             self.yolo_model = load_model(model_path, compile=False)
         except:
@@ -79,9 +81,7 @@ class YOLO(object):
             self.yolo_model.load_weights(self.model_path) # make sure model, anchors and classes match
         else:
             assert self.yolo_model.layers[-1].output_shape[-1] == \
-                num_anchors/len(self.yolo_model.output) * (num_classes + 5), \
-                'Mismatch between model and given anchor and class sizes'
-
+                num_anchors/len(self.yolo_model.output) * (num_classes + 5),  'Mismatch between model and given anchor and class sizes'
         print('{} model, anchors, and classes loaded.'.format(model_path))
 
         # Generate colors for drawing bounding boxes.
@@ -99,14 +99,18 @@ class YOLO(object):
         self.input_image_shape = K.placeholder(shape=(2, ))
         if self.gpu_num>=2:
             self.yolo_model = multi_gpu_model(self.yolo_model, gpus=self.gpu_num)
-        boxes, scores, classes = yolo_eval(self.yolo_model.output, self.anchors,
-                len(self.class_names), self.input_image_shape,
-                score_threshold=self.score, iou_threshold=self.iou)
+        boxes, scores, classes = yolo_eval(
+                self.yolo_model.output,
+                self.anchors,
+                len(self.class_names),
+                self.input_image_shape,
+                score_threshold=self.score,
+                iou_threshold=self.iou
+            )
         return boxes, scores, classes
 
     def detect_image(self, image):
         start = timer()
-
         if self.model_image_size != (None, None):
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
             assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'
@@ -130,8 +134,10 @@ class YOLO(object):
                 })
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
-        font = ImageFont.truetype(font='keras-yolo3-master/font/FiraMono-Medium.otf',
-                    size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+        font = ImageFont.truetype(
+                font='yolo3_keras/font/FiraMono-Medium.otf',
+                size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32')
+            )
         thickness = (image.size[0] + image.size[1]) // 300
 
         for i, c in reversed(list(enumerate(out_classes))):

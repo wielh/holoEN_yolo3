@@ -4,7 +4,7 @@ import os, shutil
 
 import tkinter as tk
 from tkinter import Tk, scrolledtext, END
-from object_detection_program.show_picture_UI import picture_UI
+from data_fetch.show_picture_UI import picture_UI
 
 class input_parameter_UI(Tk):
     class_dict = {

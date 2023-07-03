@@ -8,7 +8,7 @@
 
 2. 準備訓練用數據: 使用指令
 
-     python app.py --action data_fetch
+          python app.py --action data_fetch
 
 之後，會彈出一個 UI， 要你輸入以下參數: image_path, image_path_after_record,
 

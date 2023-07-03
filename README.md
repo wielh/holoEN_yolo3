@@ -7,8 +7,7 @@
 這三個步驟。如果你要訓練自己的模型，也可以自行提供數據和修改程式。
 
 2. 準備訓練用數據: 使用指令
-
-    python app.py --action data_fetch
+     python app.py --action data_fetch
 
 之後，會彈出一個 UI， 要你輸入以下參數: image_path, image_path_after_record,
 
@@ -24,11 +23,7 @@ data_record_file。image_path 是影像存放的資料夾，image_path_after_rec
 
 3. 訓練模型 : 使用指令
 
-         python app.py --action train --retrain <boolean> --annotation_path <str>
-
-     --model_dir_path <str> --load_model_name <str> --save_model_name <str>
-
-     --classes_path <str> --learning_rate <float> --batch_size <int> --epoch <int>
+          python app.py --action train --retrain <boolean> --annotation_path <str> --model_dir_path <str> --load_model_name <str> --save_model_name <str>--classes_path <str> --learning_rate <float> --batch_size <int> --epoch <int>
 
      * annotation_path 是上一步生成的文字檔
      * classes_path 是紀載所有物件類型的的文字檔，檔案格式: <class1_str>\n<class2_str>\n...<classN_str>\n
@@ -41,7 +36,7 @@ data_record_file。image_path 是影像存放的資料夾，image_path_after_rec
      3. 將本程式用的 tiny model 改成 model
 
 4. 預測結果: 使用指令
-     python app.py --action  predict --weight_path <str> --class_path <str> --input_image_dir <str> --output_image_dir <str>
+          python app.py --action  predict --weight_path <str> --class_path <str> --input_image_dir <str> --output_image_dir <str>
 
 
 

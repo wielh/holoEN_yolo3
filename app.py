@@ -1,7 +1,7 @@
 import argparse
 from data_fetch.mainUI import input_parameter_UI
 from yolo3_keras.train import start_training
-# from yolo3_keras.yolo_video import start_detecting
+from yolo3_keras.yolo_video import start_detecting
 
 type_of_actions = ['data_fetch','train','predict']
 parser = argparse.ArgumentParser()
@@ -37,7 +37,6 @@ try:
             batch_size= int(args.batch_size),
             epochs = int(args.epochs)
         )
-    '''
     elif args.action == 'predict':
         start_detecting(
             weight_path = args.weight_path,
@@ -45,7 +44,6 @@ try:
             input_images_dir = args.input_images_dir,
             output_images_dir = args.output_images_dir
         )
-    '''
 
 except Exception as e:
     print("An error occurred:", str(e))
